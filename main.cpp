@@ -23,13 +23,29 @@ vector<string> readFile(){
     input.push_back("T");
 	input.push_back("G");
     input.push_back("C");
-    //here pull in a text file, store it in input
 
     return input;
 }
 
-void outputRNASequence(vector<string> input){
-    cout << "output\n";
+void outputRNASequence(vector<string> input) {
+    cout << "mRNA sequence: ";
+    
+    for (int i = 0; i < input.size(); i++) {
+        if (input[i] == "A") {
+            cout << "U ";
+        }
+        else if (input[i] == "T") {
+            cout << "A ";
+        }
+        else if (input[i] == "G") {
+            cout << "C ";
+        }
+        else if (input[i] == "C") {
+            cout << "G ";
+        }
+    }
+    
+    cout << "\n";
 
 }
 void outputAASequence(vector<string> input){
@@ -37,14 +53,30 @@ void outputAASequence(vector<string> input){
 
 }
 void outputTRNASequence(vector<string> input){
-    cout << "output\n";
-
+    cout << "tRNA sequence: ";
+      
+      for (int i = 0; i < input.size(); i++) {
+          if (input[i] == "A") {
+              cout << "A ";
+          }
+          else if (input[i] == "T") {
+              cout << "U ";
+          }
+          else if (input[i] == "G") {
+              cout << "G ";
+          }
+          else if (input[i] == "C") {
+              cout << "C ";
+          }
+      }
+      
+      cout << "\n";
 }
 
 int main()
 {
     vector<string> input = readFile();
-
+    
     // ask if it's from 3' to 5' or 5' to 3'
     // if it's 3' to 5', reverse input
 
