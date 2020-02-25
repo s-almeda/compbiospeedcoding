@@ -18,6 +18,43 @@ using namespace std;
 // amino acid sequence
 // tRNA sequence
 
+int ORFs[3];
+
+// Ask User For Input File Name
+string getFile() {
+    string file;
+
+    // Get input file
+    cout << "Enter name of file (with extension): ";
+    getline(cin, file);
+
+    return file;
+}
+
+// Return Bottom Strand based on Top Strand
+vector<string> getBottomStrand(vector<string> topStrand) {
+    // Set Bottom Strand = Top Strand
+    vector<string> bottomStrand = topStrand;
+
+    // Reverse Bottom Strand (now 5' -> 3')
+    reverse(bottomStrand.begin(), bottomStrand.end());
+
+    // Complement Each DNA Character
+    for(int i = 0; i < bottomStrand.size(); ++i)
+    {
+        if (bottomStrand[i] == "A")
+            bottomStrand[i] = "T";
+        else if (bottomStrand[i] == "T")
+            bottomStrand[i] = "A";
+        else if (bottomStrand[i] == "C")
+            bottomStrand[i] = "G";
+        else if (bottomStrand[i] == "G")
+            bottomStrand[i] = "C";
+    }
+
+    return bottomStrand;
+}
+
 vector<string> readFile(string inputfile){
     ifstream readFile; //input stream
     char tmp; //stores chars from file
@@ -193,9 +230,7 @@ void outputAASequence(vector<string> input){
         else if(codon=="GGT" || codon=="GGC"|| codon=="GGA"|| codon=="GGG"){
             cout << "G";
         }
-        cout << " ";
-        
-        
+        cout << " ";  
     }
 
 }
@@ -223,27 +258,19 @@ void outputTRNASequence(vector<string> input){
 
 int main()
 {
-    string file;
-    string isFiveToThree;
-    
-    // Get input file
-    cout << "Enter name of file (with extension): ";
-    getline(cin, file);
+    // Get file name
+    string file = getFile();
 
-    // Get sequence direction
-    cout << "Is sequence 5' to 3'? (enter 'y' or 'n') ";
-    getline(cin, isFiveToThree);
+    // Get top strand (5'->3') sequence
+    vector<string> topStrand = readFile(file);
 
-    // Get sequence
-    vector<string> input = readFile(file);
-
-    // Reverse sequence if file is 3' to 5'
-    if(isFiveToThree == "n")
-        reverse(input.begin(), input.end());
+    // Get bottom strand (3'->5') sequence and store as (5'->3')
+    vector<string> botStrand = getBottomStrand(topStrand);
         
-    outputRNASequence(input);
-    outputTRNASequence(input);
-    outputAASequence(input);
+    outputDNASequence(topStrand);
+    outputDNASequence(botStrand);
+    //outputTRNASequence(input);
+    //outputAASequence(input);
     
     return 0;
 }
