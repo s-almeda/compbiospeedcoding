@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <fstream>
 using namespace std;
 
 
@@ -17,13 +18,35 @@ using namespace std;
 // amino acid sequence
 // tRNA sequence
 
-vector<string> readFile(){
-    vector<string> input; //get rid of this eventually
-    input.push_back("A");
-    input.push_back("T");
-	input.push_back("G");
-    input.push_back("C");
+vector<string> readFile(string inputfile){
+    ifstream readFile; //input stream
+    char tmp; //stores chars from file
+    string stmp; //stores chars from file
+    vector<string> input; //stores vector
 
+    // Open file
+    readFile.open(inputfile);
+
+    // Parse file and store into 'input'
+    if (readFile.is_open()) 
+    {
+        while (!readFile.eof()) 
+        {
+            readFile.get(tmp);
+            if(tmp == 'A' || tmp == 'C' || tmp == 'T' || tmp == 'G')
+            {
+                stmp += tmp;
+                input.push_back(stmp);
+                stmp.clear();
+            }
+        }
+
+        //remove last char (last one is read twice)
+        input.pop_back();
+    }
+
+    // Close file and return
+    readFile.close();
     return input;
 }
 
@@ -75,12 +98,24 @@ void outputTRNASequence(vector<string> input){
 
 int main()
 {
-    vector<string> input = readFile();
+    string file;
+    string isFiveToThree;
     
-    // ask if it's from 3' to 5' or 5' to 3'
-    // if it's 3' to 5', reverse input
+    // Get input file
+    cout << "Enter name of file (with extension): ";
+    getline(cin, file);
 
+    // Get sequence direction
+    cout << "Is sequence 5' to 3'? (enter 'y' or 'n') ";
+    getline(cin, isFiveToThree);
 
+    // Get sequence
+    vector<string> input = readFile(file);
+
+    // Reverse sequence if file is 3' to 5'
+    if(isFiveToThree == "n")
+        reverse(input.begin(), input.end());
+        
     outputRNASequence(input);
     outputAASequence(input);
     outputTRNASequence(input);
