@@ -72,9 +72,98 @@ void outputRNASequence(vector<string> input) {
 
 }
 void outputAASequence(vector<string> input){
-    cout << "output\n";
+    cout << "Amino Acid sequence: ";
+    string codon;
+    int startCodonIndex;
+    
+    // Scan for start codon
+    for (int i = 0; i< input.size(); i++) {
+        codon = input[i] + input[i+1] + input[i+2];
+        cout << codon << " | "; //print codon
+        if (codon=="ATG"){
+            startCodonIndex = i;
+            //cout << "start codon found!";
+            break;
+        }
+    }
+    //read by 3 letters at a time from start codon index
+    for (int i = startCodonIndex; i< input.size(); i+=3) {
+        codon = input[i] + input[i+1] + input[i+2];
+        cout << codon << ": "; //print codon
+        
+        if (codon=="TAA" || codon=="TAG" || codon == "TGA"){
+            cout << "STOP" << endl;
+            return; //if STOP codon, quit translating
+        }
+        else if(codon=="TTT" || codon=="TTC"){
+            cout << "F";
+        }
+        else if(codon=="TTA" || codon=="TTG" || codon=="CTT" || codon=="CTC"){
+            cout << "L";
+        }
+        else if(codon=="ATT" || codon=="ATC" || codon=="ATA"){
+            cout << "I";
+        }
+        else if(codon=="ATG"){
+            cout << "M";
+        }
+        else if(codon=="GTT" || codon=="GTC" || codon=="GTA" || codon=="GTG"){
+            cout << "V";
+        }
+        else if(codon=="TCT" || codon=="TCC" || codon=="TCA" || codon=="TCG"|| codon=="AGT"|| codon=="AGC"){
+            cout << "S";
+        }
+        else if(codon=="CCT" || codon=="CCC" || codon=="CCA" || codon=="CCG"){
+            cout << "P";
+        }
+        else if(codon=="ACU" || codon=="ACC" || codon=="ACA" || codon=="ACG"){
+            cout << "T";
+        }
+        
+        else if(codon=="GCU" || codon=="GCC" || codon=="GCA" || codon=="GCG"){
+            cout << "A";
+        }
+        else if(codon=="TAT" || codon=="TAC"){
+            cout << "Y";
+        }
+        else if(codon=="CAT" || codon=="CAC"){
+            cout << "H";
+        }
+        else if(codon=="CAA" || codon=="CAG"){
+            cout << "Q";
+        }
+        else if(codon=="AAT" || codon=="AAC"){
+            cout << "N";
+        }
+        else if(codon=="AAA" || codon=="AAG"){
+            cout << "K";
+        }
+        else if(codon=="GAT" || codon=="GAC"){
+            cout << "D";
+        }
+        else if(codon=="GAA" || codon=="GAG"){
+            cout << "E";
+        }
+        else if(codon=="TGT" || codon=="TGC"){
+            cout << "C";
+        }
+        else if(codon=="TGG"){
+            cout << "W";
+        }
+        else if(codon=="CGT" || codon=="CGC"|| codon=="CGA"|| codon=="CGG"|| codon=="AGA"|| codon=="AGG"){
+            cout << "R";
+        }
+
+        else if(codon=="GGT" || codon=="GGC"|| codon=="GGA"|| codon=="GGG"){
+            cout << "G";
+        }
+        cout << " ";
+        
+        
+    }
 
 }
+
 void outputTRNASequence(vector<string> input){
     cout << "tRNA sequence: ";
       
@@ -117,8 +206,9 @@ int main()
         reverse(input.begin(), input.end());
         
     outputRNASequence(input);
-    outputAASequence(input);
     outputTRNASequence(input);
+    outputAASequence(input);
+    
     return 0;
 }
 
