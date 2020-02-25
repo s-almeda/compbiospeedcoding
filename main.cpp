@@ -50,6 +50,42 @@ vector<string> readFile(string inputfile){
     return input;
 }
 
+void outputDNASequence(vector<string> input) {
+    cout << "ORF 1+: "; //indicated we are printing the 5' to 3' orientation
+    
+    for (int i = 0; i < input.size(); i++) { //iterate through each character
+        if (ORFs[i] == 0) { //if the array indicates a non-ORF char
+            if (input[i] == "A") { //if A, print a
+                cout << "a ";
+            }
+            else if (input[i] == "T") { //if T, print t
+                cout << "t ";
+            }
+            else if (input[i] == "G") { //if G, print g
+                cout << "g ";
+            }
+            else if (input[i] == "C") { //if C, print c
+                cout << "c ";
+            }
+        }
+        else if (ORFs[i] == 1) { //if the array indicates an ORF char
+            if (input[i] == "A") { //if A, print A
+                cout << "A ";
+            }
+            else if (input[i] == "T") { //if T, print T
+                cout << "T ";
+            }
+            else if (input[i] == "G") { //if G, print G
+                cout << "G ";
+            }
+            else if (input[i] == "C") { //if C, print C
+                cout << "C ";
+            }
+        }
+    }
+    cout << "\n"; //print newline
+}
+
 void outputRNASequence(vector<string> input) {
     cout << "mRNA sequence: ";
     
