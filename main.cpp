@@ -241,9 +241,10 @@ int main()
     if(isFiveToThree == "n")
         reverse(input.begin(), input.end());
         
+    outputDNASequence(input);
     outputRNASequence(input);
     outputTRNASequence(input);
-    outputAASequence(input);
+    //outputAASequence(input);
     
     return 0;
 }
