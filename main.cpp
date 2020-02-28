@@ -285,8 +285,6 @@ void outputDNAORFs (vector<string> top, vector<string> bot) {
         }
     }
     
-    cout << "\n"; //print newline before starting bottom
-    
     label = 1; //reset ORF count to 1
     
     for (int j = 0; j < bot.size(); j++) { //cycle through every element in second strand
@@ -346,8 +344,6 @@ void outputDNAORFs (vector<string> top, vector<string> bot) {
             cout << "\n"; //print newline after finishing ORF
         }
     }
-    
-    cout << "\n"; //print newline before starting bottom
     
     label = 1; //reset ORF count to 1
     
@@ -412,8 +408,6 @@ void outputRNASequence(vector<string> top, vector<string> bot) {
         }
     }
     
-    cout << "\n"; //print newline before starting bottom
-    
     label = 1; //reset ORF count to 1
     
     for (int j = 0; j < bot.size(); j++) { //cycle through every element in second strand
@@ -473,8 +467,6 @@ void outputRNASequence(vector<string> top, vector<string> bot) {
             cout << "\n"; //print newline after finishing ORF
         }
     }
-    
-    cout << "\n"; //print newline before starting bottom
     
     label = 1; //reset ORF count to 1
     
@@ -635,8 +627,6 @@ void outputTRNASequence(vector<string> top, vector<string> bot){ //method to pri
               cout << "\n"; //print newline after finishing ORF
           }
       }
-      
-      cout << "\n"; //print newline before starting bottom
       
       label = 1; //reset ORF count to 1
       
