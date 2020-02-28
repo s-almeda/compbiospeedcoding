@@ -12,11 +12,48 @@ using namespace std;
 // find ORF
 // scan through codon by codon
 // stop when stop codon is found
-// 
+//
 // OUTPUT:
 // RNA sequence
 // amino acid sequence
 // tRNA sequence
+
+int ORFs[3];
+
+// Ask User For Input File Name
+string getFile() {
+    string file;
+
+    // Get input file
+    cout << "Enter name of file (with extension): ";
+    getline(cin, file);
+
+    return file;
+}
+
+// Return Bottom Strand based on Top Strand
+vector<string> getBottomStrand(vector<string> topStrand) {
+    // Set Bottom Strand = Top Strand
+    vector<string> bottomStrand = topStrand;
+
+    // Reverse Bottom Strand (now 5' -> 3')
+    reverse(bottomStrand.begin(), bottomStrand.end());
+
+    // Complement Each DNA Character
+    for(int i = 0; i < bottomStrand.size(); ++i)
+    {
+        if (bottomStrand[i] == "A")
+            bottomStrand[i] = "T";
+        else if (bottomStrand[i] == "T")
+            bottomStrand[i] = "A";
+        else if (bottomStrand[i] == "C")
+            bottomStrand[i] = "G";
+        else if (bottomStrand[i] == "G")
+            bottomStrand[i] = "C";
+    }
+
+    return bottomStrand;
+}
 
 vector<string> readFile(string inputfile){
     ifstream readFile; //input stream
@@ -28,9 +65,9 @@ vector<string> readFile(string inputfile){
     readFile.open(inputfile);
 
     // Parse file and store into 'input'
-    if (readFile.is_open()) 
+    if (readFile.is_open())
     {
-        while (!readFile.eof()) 
+        while (!readFile.eof())
         {
             readFile.get(tmp);
             if(tmp == 'A' || tmp == 'C' || tmp == 'T' || tmp == 'G')
@@ -51,8 +88,6 @@ vector<string> readFile(string inputfile){
 }
 
 void outputDNASequence(vector<string> input) {
-    cout << "ORF 1+: "; //indicated we are printing the 5' to 3' orientation
-    
     for (int i = 0; i < input.size(); i++) { //iterate through each character
         if (ORFs[i] == 0) { //if the array indicates a non-ORF char
             if (input[i] == "A") { //if A, print a
@@ -87,20 +122,24 @@ void outputDNASequence(vector<string> input) {
 }
 
 void outputRNASequence(vector<string> input) {
-    cout << "mRNA sequence: ";
+    cout << "mRNA listed\n";
+    
+    cout << "mRNA 1+: ";
     
     for (int i = 0; i < input.size(); i++) {
-        if (input[i] == "A") {
-            cout << "U ";
-        }
-        else if (input[i] == "T") {
-            cout << "A ";
-        }
-        else if (input[i] == "G") {
-            cout << "C ";
-        }
-        else if (input[i] == "C") {
-            cout << "G ";
+        if (ORFs[i] == 1) { //indicates the character is within an ORF
+            if (input[i] == "A") {
+                cout << "U ";
+            }
+            else if (input[i] == "T") {
+                cout << "A ";
+            }
+            else if (input[i] == "G") {
+                cout << "C ";
+            }
+            else if (input[i] == "C") {
+                cout << "G ";
+            }
         }
     }
     
@@ -194,8 +233,6 @@ void outputAASequence(vector<string> input){
             cout << "G";
         }
         cout << " ";
-        
-        
     }
 
 }
@@ -223,30 +260,21 @@ void outputTRNASequence(vector<string> input){
 
 int main()
 {
-    string file;
-    string isFiveToThree;
+    // Get file name
+    string file = getFile();
+
+    // Get top strand (5'->3') sequence
+    vector<string> topStrand = readFile(file);
+
+    // Get bottom strand (3'->5') sequence and store as (5'->3')
+    vector<string> botStrand = getBottomStrand(topStrand);
     
-    // Get input file
-    cout << "Enter name of file (with extension): ";
-    getline(cin, file);
-
-    // Get sequence direction
-    cout << "Is sequence 5' to 3'? (enter 'y' or 'n') ";
-    getline(cin, isFiveToThree);
-
-    // Get sequence
-    vector<string> input = readFile(file);
-
-    // Reverse sequence if file is 3' to 5'
-    if(isFiveToThree == "n")
-        reverse(input.begin(), input.end());
-        
-    outputDNASequence(input);
-    outputRNASequence(input);
-    outputTRNASequence(input);
+    cout << "ORF 1+: "; //indicates we are printing the 5' to 3' orientation
+    outputDNASequence(topStrand);
+    cout << "ORF 1-: "; //indicates we are printing in the 3' to 5' orientation
+    outputDNASequence(botStrand);
+    //outputTRNASequence(input);
     //outputAASequence(input);
     
     return 0;
 }
-
-
