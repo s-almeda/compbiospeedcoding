@@ -257,6 +257,133 @@ void outputDNASequence(vector<string> top, vector<string> bot) {
     cout << "  3'\n\n"; //print newlines
 }
 
+void outputDNAORFs (vector<string> top, vector<string> bot) {
+    cout << "DNA ORFs listed\n";
+    int label = 1; //counts which ORF we are printing
+    int i;
+    
+    for (i = 0; i < top.size(); i++) { //cycles through each element in first strand
+        if (ORFs[i] == 1) { //upon finding an element that starts an ORF...
+            cout << "ORF " << label << "+: "; //print labeling
+            label++; //increment ORF count
+            while (ORFs[i] == 1) { //keep printing elements until ORF is finished
+                if (top[i] == "A") { //if statements to print correct nucleotide
+                    cout << "A";
+                }
+                else if (top[i] == "T") {
+                    cout << "T";
+                }
+                else if (top[i] == "G") {
+                    cout << "G";
+                }
+                else if (top[i] == "C") {
+                    cout << "C";
+                }
+                i++; //increment i to keep for loop on track
+            }
+            cout << "\n"; //print newline after finishing ORF
+        }
+    }
+    
+    cout << "\n"; //print newline before starting bottom
+    
+    label = 1; //reset ORF count to 1
+    
+    for (int j = 0; j < bot.size(); j++) { //cycle through every element in second strand
+        if (ORFs[i + j] == 1) { //if element is the start of an ORF...
+            cout << "ORF " << label << "-: "; //print out labeling
+            label++; //icrement ORF count
+            while (ORFs[i + j] == 1) { //keep printing elements until ORF is finished
+                if (bot[j] == "A") { //if statements to print correct nucleotide
+                    cout << "A";
+                }
+                else if (bot[j] == "T") {
+                    cout << "T";
+                }
+                else if (bot[j] == "G") {
+                    cout << "G";
+                }
+                else if (bot[j] == "C") {
+                    cout << "C";
+                }
+                j++; //increment j to keep for loop on track
+            }
+            cout << "\n"; //print newline after finishing ORF
+        }
+    }
+    
+    cout << "\n"; //print newline before printing next portion
+    
+    cout << "DNA ORFs listed as codons\n"; //statement before beginning codon printing
+    
+    label = 1; //reset ORF count
+    int counter = 0;
+
+    for (i = 0; i < top.size(); i++) { //cycles through each element in first strand
+        if (ORFs[i] == 1) { //upon finding an element that starts an ORF...
+            cout << "ORF " << label << "+: "; //print labeling
+            label++; //increment ORF count
+            while (ORFs[i] == 1) { //keep printing elements until ORF is finished
+                if (top[i] == "A") { //if statements to print correct nucleotide
+                    cout << "A";
+                }
+                else if (top[i] == "T") {
+                    cout << "T";
+                }
+                else if (top[i] == "G") {
+                    cout << "G";
+                }
+                else if (top[i] == "C") {
+                    cout << "C";
+                }
+                i++; //increment i to keep for loop on track
+                counter++; //increment counter so that we know when to print a dash
+                if (counter % 3 == 0 && ORFs[i+1] == 1) { //if a multiple of 3 has been printed and the next element is in the ORF...
+                    cout<<"-"; //print dash
+                }
+            }
+            counter = 0; //reset counter for next read
+            cout << "\n"; //print newline after finishing ORF
+        }
+    }
+    
+    cout << "\n"; //print newline before starting bottom
+    
+    label = 1; //reset ORF count to 1
+    
+    for (int j = 0; j < bot.size(); j++) { //cycle through every element in second strand
+        if (ORFs[i + j] == 1) { //if element is the start of an ORF...
+            cout << "ORF " << label << "-: "; //print out labeling
+            label++; //increment ORF count
+            while (ORFs[i + j] == 1) { //keep printing elements until ORF is finished
+                if (bot[j] == "A") { //if statements to print correct nucleotide
+                    cout << "A";
+                }
+                else if (bot[j] == "T") {
+                    cout << "T";
+                }
+                else if (bot[j] == "G") {
+                    cout << "G";
+                }
+                else if (bot[j] == "C") {
+                    cout << "C";
+                }
+                j++; //increment j to keep for loop on track
+                counter++; //increment counter so that we know when to print a dash
+                if (counter % 3 == 0 && ORFs[i+j+1] == 1) { //if a multiple of 3 has been printed and the next element is in the ORF...
+                    cout<<"-"; //print dash
+                }
+            }
+            counter = 0; //reset counter for next read
+            cout << "\n"; //print newline after finishing ORF
+        }
+    }
+    
+    cout << "\n"; //print newline before exiting function
+
+
+}
+
 void outputRNASequence(vector<string> top, vector<string> bot) {
     cout << "mRNA listed\n";
     int label = 1; //counts which ORF we are printing
@@ -474,25 +601,75 @@ void outputAASequence(vector<string> input){
 
 }
 
-void outputTRNASequence(vector<string> input){
-    cout << "tRNA sequence: ";
+void outputTRNASequence(vector<string> top, vector<string> bot){ //method to print tRNA anti-codons
+    cout << "tRNA listed as anti-codons\n";
       
-      for (int i = 0; i < input.size(); i++) {
-          if (input[i] == "A") {
-              cout << "A";
-          }
-          else if (input[i] == "T") {
-              cout << "U";
-          }
-          else if (input[i] == "G") {
-              cout << "G";
-          }
-          else if (input[i] == "C") {
-              cout << "C";
+    int i; //to be used in loop
+    int label = 1; //variable used as an ORF counter
+    int counter = 0; //variable used to check if 3 nucleotides have been printed
+
+      for (i = 0; i < top.size(); i++) { //cycles through each element in first strand
+          if (ORFs[i] == 1) { //upon finding an element that starts an ORF...
+              cout << "tRNA " << label << "+: "; //print labeling
+              label++; //increment ORF count
+              while (ORFs[i] == 1) { //keep printing elements until ORF is finished
+                  if (top[i] == "A") { //if statements to print correct nucleotide
+                      cout << "U";
+                  }
+                  else if (top[i] == "T") {
+                      cout << "A";
+                  }
+                  else if (top[i] == "G") {
+                      cout << "C";
+                  }
+                  else if (top[i] == "C") {
+                      cout << "G";
+                  }
+                  i++; //increment i to keep for loop on track
+                  counter++; //increment counter so that we know when to print a dash
+                  if (counter % 3 == 0 && ORFs[i+1] == 1) { //if a multiple of 3 has been printed and the next element is in the ORF...
+                      cout<<"-"; //print dash
+                  }
+              }
+              counter = 0; //reset counter for next read
+              cout << "\n"; //print newline after finishing ORF
           }
       }
       
-      cout << "\n";
+      cout << "\n"; //print newline before starting bottom
+      
+      label = 1; //reset ORF count to 1
+      
+      for (int j = 0; j < bot.size(); j++) { //cycle through every element in second strand
+          if (ORFs[i + j] == 1) { //if element is the start of an ORF...
+              cout << "tRNA " << label << "-: "; //print out labeling
+              label++; //increment ORF count
+              while (ORFs[i + j] == 1) { //keep printing elements until ORF is finished
+                  if (bot[j] == "A") { //if statements to print correct nucleotide
+                      cout << "U";
+                  }
+                  else if (bot[j] == "T") {
+                      cout << "A";
+                  }
+                  else if (bot[j] == "G") {
+                      cout << "C";
+                  }
+                  else if (bot[j] == "C") {
+                      cout << "G";
+                  }
+                  j++; //increment j to keep for loop on track
+                  counter++; //increment counter so that we know when to print a dash
+                  if (counter % 3 == 0 && ORFs[i+j+1] == 1) { //if a multiple of 3 has been printed and the next element is in the ORF...
+                      cout<<"-"; //print dash
+                  }
+              }
+              counter = 0; //reset counter for next read
+              cout << "\n"; //print newline after finishing ORF
+          }
+      }
+      
+      cout << "\n"; //print newline before exiting function
+
 }
 
 int main()
@@ -512,11 +689,14 @@ int main()
     //print DNA sequence for top and bottom strands
     outputDNASequence(topStrand, botStrand);
     
+    //print DNA ORFs for top and bottom strands
+    outputDNAORFs(topStrand, botStrand);
+    
     //print mRNA sequences for top and bottom strands
     outputRNASequence(topStrand, botStrand);
     
-    //outputTRNASequence(input);
-    //outputAASequence(input);
+    //print tRNA anti-codons for top and bottom strands
+    outputTRNASequence(topStrand, botStrand);
     
     return 0;
 }
