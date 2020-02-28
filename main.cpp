@@ -18,7 +18,7 @@ using namespace std;
 // amino acid sequence
 // tRNA sequence
 
-int ORFs[10000];
+int ORFs[20000];
 
 // Ask User For Input File Name
 string getFile() {
