@@ -18,7 +18,8 @@ using namespace std;
 // amino acid sequence
 // tRNA sequence
 
-int ORFs[20000];
+int ORFs[100000];
+string header;
 
 // Ask User For Input File Name
 string getFile() {
@@ -243,6 +244,8 @@ vector<string> readFile(string inputfile){
     // Parse file and store into 'input'
     if (readFile.is_open())
     {
+        getline(readFile, header);
+        cout << header << "\n";
         while (!readFile.eof())
         {
             readFile.get(tmp);
