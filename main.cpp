@@ -593,8 +593,10 @@ void outputAASequence(vector<string> top, vector<string> bot) {
         if (ORFs[i] == 1) { //check if codon is marked as ORF
             cout << "AA " << label << "+: "; //print labeing
             label++;
+            codon.clear(); //reset any leftover letters in codon string
             while (ORFs[i] == 1) {
                 codon += top[i]; //add that element to our codon
+                cout << i << ": **" << codon << "**\n";
                 
                 if(codon=="TTT" || codon=="TTC"){ //if and else if branches to print out appropriate amino acid
                     cout << "F";
@@ -664,7 +666,7 @@ void outputAASequence(vector<string> top, vector<string> bot) {
                 }
                 
                 nucCount++; //incrememnt amount of nucleotides
-                if (nucCount % 3 == 0) { //if 3 nucleotides are present, clear and print a space
+                if (ORFs[i+1] == 1 && ORFs[i-1] == 1 && nucCount % 3 == 0) { //if 3 nucleotides are present, clear and print a space
                     cout << " ";
                     codon.clear();
                 }
