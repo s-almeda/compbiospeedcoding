@@ -596,6 +596,7 @@ void outputAASequence(vector<string> top, vector<string> bot) {
             codon.clear(); //reset any leftover letters in codon string
             while (ORFs[i] == 1) {
                 codon += top[i]; //add that element to our codon
+                cout << i << ": **" << codon << "**\n";
                 
                 if(codon=="TTT" || codon=="TTC"){ //if and else if branches to print out appropriate amino acid
                     cout << "F";
