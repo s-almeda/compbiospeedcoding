@@ -2,7 +2,6 @@
 #include <vector>
 #include <string>
 #include <fstream>
-#include <algorithm>
 using namespace std;
 
 
@@ -56,24 +55,12 @@ vector<string> getBottomStrand(vector<string> topStrand) {
     return bottomStrand;
 }
 
-bool thisStartHasStop(vector<string> input, int startIndex){
-
-	for (int i = startIndex; i < input.size(); i+=3){ // go through codon by codon checking if we have a stop codon
-		string codon = input[i] + input[i+1] + input[i+2]; //cout << codon << " - ";
-        if (codon=="TAA" || codon=="TAG" || codon == "TGA"){ //cout << "STOP" << endl;
-            return true; //if STOP codon, return true
-        }
-	} //end of for loop, we reached the end of the input without finding a stop index
-	return false;
-
-	
-}
-
 // Set ORF Array
 void setORFArray(vector<string> top, vector<string> bot) {
     int i = 2; //index for top
     int j = 2; //index for bot
     int inFrame = 0; //increment when ATG is found
+    vector<int> toBeAdded;
 
     // Loop through top strand and find ORF
     while(i < top.size())
@@ -81,34 +68,74 @@ void setORFArray(vector<string> top, vector<string> bot) {
         // Check For Start Codon
         if(top[i-2] == "A" && top[i-1] == "T" && top[i] == "G")
         {
-        	// send to the function that checks for STOP Codon!
-        	if (thisStartHasStop(top, i+1)){
-        		inFrame++;//cout << "Increment Top Frame\n";
-        	}
-            
+            inFrame++;
+            toBeAdded.push_back(i-2);
+            toBeAdded.push_back(i-1);
+            toBeAdded.push_back(i);
+
+        } else if(top[i-2] == "T" && top[i-1] == "A" && top[i] == "G" && inFrame > 0) {
+            inFrame--;
+
+            toBeAdded.push_back(i-2);
+            toBeAdded.push_back(i-1);
+            toBeAdded.push_back(i);
+            if (toBeAdded.size() > 150)
+            {
+                for(int k = 0; k < toBeAdded.size(); k++)
+                {
+                    ORFs[toBeAdded[k]] = 1;
+                }
+            }
+
+            toBeAdded.clear();
+
+        } else if(top[i-2] == "T" && top[i-1] == "A" && top[i] == "A" && inFrame > 0) {
+            inFrame--;
+
+            toBeAdded.push_back(i-2);
+            toBeAdded.push_back(i-1);
+            toBeAdded.push_back(i);
+            if (toBeAdded.size() > 150)
+            {
+                for(int k = 0; k < toBeAdded.size(); k++)
+                {
+                    ORFs[toBeAdded[k]] = 1;
+                }
+            }
+
+            toBeAdded.clear();
+
+        } else if(top[i-2] == "T" && top[i-1] == "G" && top[i] == "A" && inFrame > 0) {
+            inFrame--;
+
+            toBeAdded.push_back(i-2);
+            toBeAdded.push_back(i-1);
+            toBeAdded.push_back(i);
+            if (toBeAdded.size() > 150)
+            {
+                for(int k = 0; k < toBeAdded.size(); k++)
+                {
+                    ORFs[toBeAdded[k]] = 1;
+                }
+            }
+
+            toBeAdded.clear();
+
+        } else {
+            if(inFrame > 0) {
+                toBeAdded.push_back(i-2);
+                toBeAdded.push_back(i-1);
+                toBeAdded.push_back(i);
+            }
         }
 
         // If In ORF, Set Frames in ORF Array To 1
-        if(inFrame > 0)
+        /*if(inFrame > 0)
         {
             ORFs[i-2] = 1;
             ORFs[i-1] = 1;
             ORFs[i] = 1;
-        }
-
-        // Check For Stop Codon
-        if(top[i-2] == "T" && top[i-1] == "A" && top[i] == "G" && inFrame > 0) {
-            inFrame--;
-            //cout << "Decrement Top Frame\n";
-
-        } else if(top[i-2] == "T" && top[i-1] == "A" && top[i] == "A" && inFrame > 0) {
-            inFrame--;
-            //cout << "Decrement Top Frame\n";
-
-        } else if(top[i-2] == "T" && top[i-1] == "G" && top[i] == "A" && inFrame > 0) {
-            inFrame--;
-            //cout << "Decrement Top Frame\n";
-        }
+        }*/
 
         // Increment Index
         if(inFrame > 0)
@@ -122,40 +149,73 @@ void setORFArray(vector<string> top, vector<string> bot) {
     }
 
     inFrame = 0; //reset inFrame for bot strand
+    toBeAdded.clear();
 
     // Loop through bot strand and find ORF
-    while(j < bot.size()) 
+    while(j < bot.size())
     {
         // Check For Start Codon
         if(bot[j-2] == "A" && bot[j-1] == "T" && bot[j] == "G")
         {
-            //cout << "Increment Bot Frame\n";
-            // send to the function that checks for STOP Codon!
-        	if (thisStartHasStop(bot, j+1)){
-        		inFrame++;//cout << "Increment Top Frame\n";
-        	}
-        }
+            inFrame++;
+            toBeAdded.push_back(j-2);
+            toBeAdded.push_back(j-1);
+            toBeAdded.push_back(j);
 
-        // If In ORF, Set Frames in ORF Array To 1
-        if(inFrame > 0)
-        {
-            ORFs[i+j-2] = 1;
-            ORFs[i+j-1] = 1;
-            ORFs[i+j] = 1;
-        }
-
-        // Check For Stop Codon
-        if(bot[j-2] == "T" && bot[j-1] == "A" && bot[j] == "G" && inFrame > 0) {
+        } else if(bot[j-2] == "T" && bot[j-1] == "A" && bot[j] == "G" && inFrame > 0) {
             inFrame--;
-            //cout << "Decrement Bot Frame\n";
+            toBeAdded.push_back(j-2);
+            toBeAdded.push_back(j-1);
+            toBeAdded.push_back(j);
+
+            if (toBeAdded.size() > 150)
+            {
+                for(int k = 0; k < toBeAdded.size(); k++)
+                {
+                    ORFs[toBeAdded[k] + i] = 1;
+                }
+            }
+
+            toBeAdded.clear();
 
         } else if(bot[j-2] == "T" && bot[j-1] == "A" && bot[j] == "A" && inFrame > 0) {
             inFrame--;
-            //cout << "Decrement Bot Frame\n";
+            toBeAdded.push_back(j-2);
+            toBeAdded.push_back(j-1);
+            toBeAdded.push_back(j);
+
+            if (toBeAdded.size() > 150)
+            {
+                for(int k = 0; k < toBeAdded.size(); k++)
+                {
+                    ORFs[toBeAdded[k] + i] = 1;
+                }
+            }
+
+            toBeAdded.clear();
 
         } else if(bot[j-2] == "T" && bot[j-1] == "G" && bot[j] == "A" && inFrame > 0) {
             inFrame--;
-            //cout << "Decrement Bot Frame\n";
+            toBeAdded.push_back(j-2);
+            toBeAdded.push_back(j-1);
+            toBeAdded.push_back(j);
+
+            if (toBeAdded.size() > 150)
+            {
+                for(int k = 0; k < toBeAdded.size(); k++)
+                {
+                    ORFs[toBeAdded[k] + i] = 1;
+                }
+            }
+
+            toBeAdded.clear();
+
+        } else {
+            if(inFrame > 0) {
+                toBeAdded.push_back(j-2);
+                toBeAdded.push_back(j-1);
+                toBeAdded.push_back(j);
+            }
         }
 
         // Increment Index
@@ -281,26 +341,12 @@ void outputDNAORFs (vector<string> top, vector<string> bot) {
     cout << "DNA ORFs listed\n";
     int label = 1; //counts which ORF we are printing
     int i;
-    int thisORFLength = 0; //counts up and resets for each ORF
-    bool nested; //are we currently in a nested ORF?
-    vector<int> nestedIndices; // holds the indices for the start index of any nested ORFs
     
     for (i = 0; i < top.size(); i++) { //cycles through each element in first strand
         if (ORFs[i] == 1) { //upon finding an element that starts an ORF...
-        	thisORFLength = 0;
             cout << "ORF " << label << "+: "; //print labeling
             label++; //increment ORF count
             while (ORFs[i] == 1) { //keep printing elements until ORF is finished
-            	// -- CHECK FOR NESTED ORF (starting with the next element, so we don't double count this one)-- //
-            	string codon = top[i+1] + top[i+2] + top[i+3]; //cout << codon << " - ";
-            	
-		        if (codon=="ATG"){ // we found a start codon!!
-		        	// if there's also a stop codon that aligns with this start, we've found a nested ORF
-		        	if (thisStartHasStop(top, i+1)){ 
-		        		nestedIndices.push_back(i+1); } 
-		        }
-		        // ---  end of checking for Nested ORF --- //
-
                 if (top[i] == "A") { //if statements to print correct nucleotide
                     cout << "A";
                 }
@@ -313,53 +359,19 @@ void outputDNAORFs (vector<string> top, vector<string> bot) {
                 else if (top[i] == "C") {
                     cout << "C";
                 }
-
-                // -- check for nested stop -- //
-                if (nested && (thisORFLength+1)%3 == 0){ //if we're in a nested orf, we have to check for an early stop codon every 3 nucleotides
-		        	string codon = top[i-2] + top[i-1] + top[i]; //cout << codon << " - ";
-			        if (codon=="TAA" || codon=="TAG" || codon == "TGA"){ //cout << "STOP" << endl;
-			            nested = false; //we found a stop codon; skip to the end of this reading frame
-			            while (ORFs[i+1] == 1){
-			            	i++;
-			            }
-			        }
-		        }
-
-		        thisORFLength++;
                 i++; //increment i to keep for loop on track
             }
             cout << "\n"; //print newline after finishing ORF
-
-            // jump back to any nested orfs we might have found //
-            if (!nestedIndices.empty()) { //if there's a nested ORF
-            	i = nestedIndices[0]-1; //change for-loop index to the first thing in this array
-            	nestedIndices.erase(nestedIndices.begin()); //remove that element
-            	nested = true;
-            }
         }
     }
-    i = top.size(); //kinda just an assertion
+    
     label = 1; //reset ORF count to 1
-
     
     for (int j = 0; j < bot.size(); j++) { //cycle through every element in second strand
         if (ORFs[i + j] == 1) { //if element is the start of an ORF...
-        	thisORFLength = 0;
             cout << "ORF " << label << "-: "; //print out labeling
             label++; //icrement ORF count
             while (ORFs[i + j] == 1) { //keep printing elements until ORF is finished
-
-            	// -- CHECK FOR NESTED ORF (starting with the next element, so we don't double count this one)-- //
-            	string codon = bot[j+1] + bot[j+2] + bot[j+3]; //cout << codon << " - ";
-            	
-		        if (codon=="ATG"){ // we found a start codon!!
-		        	// if there's also a stop codon that aligns with this start, we've found a nested ORF
-
-		        	if (thisStartHasStop(bot, j+1)){ 
-		        		nestedIndices.push_back(j+1); } 
-		        }
-		        // ---  end of checking for Nested ORF --- //
-
                 if (bot[j] == "A") { //if statements to print correct nucleotide
                     cout << "A";
                 }
@@ -372,29 +384,9 @@ void outputDNAORFs (vector<string> top, vector<string> bot) {
                 else if (bot[j] == "C") {
                     cout << "C";
                 }
-
-                 // -- check for nested stop -- //
-                if (nested && (thisORFLength+1)%3 == 0){ //if we're in a nested orf, we have to check for an early stop codon every 3 nucleotides
-		        	string codon = bot[j-2] + bot[j-1] + bot[j]; //
-		        	//cout << "codon: " << codon << endl;
-			        if (codon=="TAA" || codon=="TAG" || codon == "TGA"){ //cout << "STOP" << endl;
-			            nested = false; //we found a stop codon; skip to the end of this reading frame
-			            while (ORFs[i+j+1] == 1){
-			            	j++;
-			            }
-			        }
-		        }
-
-		        thisORFLength++;
                 j++; //increment j to keep for loop on track
             }
             cout << "\n"; //print newline after finishing ORF
-
-            if (!nestedIndices.empty()) { //if there's a nested ORF
-            	j = nestedIndices[0]-1; //change for-loop index to the first thing in this array
-            	nestedIndices.erase(nestedIndices.begin()); //remove that element
-            	nested = true;
-            }
         }
     }
     
@@ -590,93 +582,95 @@ void outputRNASequence(vector<string> top, vector<string> bot) {
 
 
 }
-void outputAASequence(vector<string> input){
-    cout << "Amino Acid sequence: ";
-    string codon;
-    int startCodonIndex;
-    
-    // Scan for start codon
-    for (int i = 0; i< input.size(); i++) {
-        codon = input[i] + input[i+1] + input[i+2];
-        cout << codon << " | "; //print codon
-        if (codon=="ATG"){
-            startCodonIndex = i;
-            //cout << "start codon found!";
-            break;
-        }
-    }
-    //read by 3 letters at a time from start codon index
-    for (int i = startCodonIndex; i< input.size(); i+=3) {
-        codon = input[i] + input[i+1] + input[i+2];
-        cout << codon << ": "; //print codon
-        
-        if (codon=="TAA" || codon=="TAG" || codon == "TGA"){
-            cout << "STOP" << endl;
-            return; //if STOP codon, quit translating
-        }
-        else if(codon=="TTT" || codon=="TTC"){
-            cout << "F";
-        }
-        else if(codon=="TTA" || codon=="TTG" || codon=="CTT" || codon=="CTC"){
-            cout << "L";
-        }
-        else if(codon=="ATT" || codon=="ATC" || codon=="ATA"){
-            cout << "I";
-        }
-        else if(codon=="ATG"){
-            cout << "M";
-        }
-        else if(codon=="GTT" || codon=="GTC" || codon=="GTA" || codon=="GTG"){
-            cout << "V";
-        }
-        else if(codon=="TCT" || codon=="TCC" || codon=="TCA" || codon=="TCG"|| codon=="AGT"|| codon=="AGC"){
-            cout << "S";
-        }
-        else if(codon=="CCT" || codon=="CCC" || codon=="CCA" || codon=="CCG"){
-            cout << "P";
-        }
-        else if(codon=="ACU" || codon=="ACC" || codon=="ACA" || codon=="ACG"){
-            cout << "T";
-        }
-        
-        else if(codon=="GCU" || codon=="GCC" || codon=="GCA" || codon=="GCG"){
-            cout << "A";
-        }
-        else if(codon=="TAT" || codon=="TAC"){
-            cout << "Y";
-        }
-        else if(codon=="CAT" || codon=="CAC"){
-            cout << "H";
-        }
-        else if(codon=="CAA" || codon=="CAG"){
-            cout << "Q";
-        }
-        else if(codon=="AAT" || codon=="AAC"){
-            cout << "N";
-        }
-        else if(codon=="AAA" || codon=="AAG"){
-            cout << "K";
-        }
-        else if(codon=="GAT" || codon=="GAC"){
-            cout << "D";
-        }
-        else if(codon=="GAA" || codon=="GAG"){
-            cout << "E";
-        }
-        else if(codon=="TGT" || codon=="TGC"){
-            cout << "C";
-        }
-        else if(codon=="TGG"){
-            cout << "W";
-        }
-        else if(codon=="CGT" || codon=="CGC"|| codon=="CGA"|| codon=="CGG"|| codon=="AGA"|| codon=="AGG"){
-            cout << "R";
-        }
+void outputAASequence(vector<string> top, vector<string> bot) {
+    cout << "Amino Acid sequences: \n";
+    string codon; //used to store 3 letter strings for conversions
+    int nucCount = 0; //variable used to know how many nucleotides we have used
+    int label = 1; //variable used as an ORF counter
 
-        else if(codon=="GGT" || codon=="GGC"|| codon=="GGA"|| codon=="GGG"){
-            cout << "G";
+    //read by 3 letters at a time from start codon index
+    for (int i = 0; i < top.size(); i++) { //parse through top string
+        if (ORFs[i] == 1) { //check if codon is marked as ORF
+            cout << "AA " << label << "+: "; //print labeing
+            label++;
+            while (ORFs[i] == 1) {
+                codon += top[i]; //add that element to our codon
+                
+                if(codon=="TTT" || codon=="TTC"){ //if and else if branches to print out appropriate amino acid
+                    cout << "F";
+                }
+                else if(codon=="TTA" || codon=="TTG" || codon=="CTT" || codon=="CTC"){
+                    cout << "L";
+                }
+                else if(codon=="ATT" || codon=="ATC" || codon=="ATA"){
+                    cout << "I";
+                }
+                else if(codon=="ATG"){
+                    cout << "M";
+                }
+                else if(codon=="GTT" || codon=="GTC" || codon=="GTA" || codon=="GTG"){
+                    cout << "V";
+                }
+                else if(codon=="TCT" || codon=="TCC" || codon=="TCA" || codon=="TCG"|| codon=="AGT"|| codon=="AGC"){
+                    cout << "S";
+                }
+                else if(codon=="CCT" || codon=="CCC" || codon=="CCA" || codon=="CCG"){
+                    cout << "P";
+                }
+                else if(codon=="ACU" || codon=="ACC" || codon=="ACA" || codon=="ACG"){
+                    cout << "T";
+                }
+                
+                else if(codon=="GCU" || codon=="GCC" || codon=="GCA" || codon=="GCG"){
+                    cout << "A";
+                }
+                else if(codon=="TAT" || codon=="TAC"){
+                    cout << "Y";
+                }
+                else if(codon=="CAT" || codon=="CAC"){
+                    cout << "H";
+                }
+                else if(codon=="CAA" || codon=="CAG"){
+                    cout << "Q";
+                }
+                else if(codon=="AAT" || codon=="AAC"){
+                    cout << "N";
+                }
+                else if(codon=="AAA" || codon=="AAG"){
+                    cout << "K";
+                }
+                else if(codon=="GAT" || codon=="GAC"){
+                    cout << "D";
+                }
+                else if(codon=="GAA" || codon=="GAG"){
+                    cout << "E";
+                }
+                else if(codon=="TGT" || codon=="TGC"){
+                    cout << "C";
+                }
+                else if(codon=="TGG"){
+                    cout << "W";
+                }
+                else if(codon=="CGT" || codon=="CGC"|| codon=="CGA"|| codon=="CGG"|| codon=="AGA"|| codon=="AGG"){
+                    cout << "R";
+                }
+
+                else if(codon=="GGT" || codon=="GGC"|| codon=="GGA"|| codon=="GGG"){
+                    cout << "G";
+                }
+                
+                else if (codon=="TAA" || codon=="TAG" || codon == "TGA"){
+                    cout << "STOP" << endl; //in case of stop codon
+                }
+                
+                nucCount++; //incrememnt amount of nucleotides
+                if (nucCount % 3 == 0) { //if 3 nucleotides are present, clear and print a space
+                    cout << " ";
+                    codon.clear();
+                }
+                i++;
+            }
         }
-        cout << " ";
     }
 
 }
@@ -775,6 +769,9 @@ int main()
     
     //print tRNA anti-codons for top and bottom strands
     outputTRNASequence(topStrand, botStrand);
+    
+    //print amino acid translation for top and bottom strands
+    outputAASequence(topStrand, botStrand);
     
     return 0;
 }
