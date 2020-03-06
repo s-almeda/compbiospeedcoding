@@ -582,9 +582,10 @@ void outputAASequence(vector<string> top, vector<string> bot) {
     string codon; //used to store 3 letter strings for conversions
     int nucCount = 0; //variable used to know how many nucleotides we have used
     int label = 1; //variable used as an ORF counter
+    int i = 0;
 
     //read by 3 letters at a time from start codon index
-    for (int i = 0; i < top.size(); i++) { //parse through top string
+    for (i = 0; i < top.size(); i++) { //parse through top string
         if (ORFs[i] == 1) { //check if codon is marked as ORF
             cout << "AA " << label << "+: "; //print labeing
             label++;
@@ -660,11 +661,100 @@ void outputAASequence(vector<string> top, vector<string> bot) {
                 
                 nucCount++; //incrememnt amount of nucleotides
                 if (ORFs[i+1] == 1 && ORFs[i-1] == 1 && nucCount % 3 == 0) { //if 3 nucleotides are present, clear and print a space
-                    cout << " ";
+                    cout << "";
                     codon.clear();
                 }
                 i++;
             }
+            cout << "\n";
+        }
+    }
+
+    label = 1;
+
+    //read by 3 letters at a time from start codon index
+    for (int j = 0; j < bot.size(); j++) { //parse through top string
+        if (ORFs[j + i] == 1) { //check if codon is marked as ORF
+            cout << "AA " << label << "-: "; //print labeing
+            label++;
+            codon.clear(); //reset any leftover letters in codon string
+            while (ORFs[j + i] == 1) {
+                codon += bot[j]; //add that element to our codon
+                
+                if(codon=="TTT" || codon=="TTC"){ //if and else if branches to print out appropriate amino acid
+                    cout << "F";
+                }
+                else if(codon=="TTA" || codon=="TTG" || codon=="CTT" || codon=="CTC"){
+                    cout << "L";
+                }
+                else if(codon=="ATT" || codon=="ATC" || codon=="ATA"){
+                    cout << "I";
+                }
+                else if(codon=="ATG"){
+                    cout << "M";
+                }
+                else if(codon=="GTT" || codon=="GTC" || codon=="GTA" || codon=="GTG"){
+                    cout << "V";
+                }
+                else if(codon=="TCT" || codon=="TCC" || codon=="TCA" || codon=="TCG"|| codon=="AGT"|| codon=="AGC"){
+                    cout << "S";
+                }
+                else if(codon=="CCT" || codon=="CCC" || codon=="CCA" || codon=="CCG"){
+                    cout << "P";
+                }
+                else if(codon=="ACU" || codon=="ACC" || codon=="ACA" || codon=="ACG"){
+                    cout << "T";
+                }
+                else if(codon=="GCU" || codon=="GCC" || codon=="GCA" || codon=="GCG"){
+                    cout << "A";
+                }
+                else if(codon=="TAT" || codon=="TAC"){
+                    cout << "Y";
+                }
+                else if(codon=="CAT" || codon=="CAC"){
+                    cout << "H";
+                }
+                else if(codon=="CAA" || codon=="CAG"){
+                    cout << "Q";
+                }
+                else if(codon=="AAT" || codon=="AAC"){
+                    cout << "N";
+                }
+                else if(codon=="AAA" || codon=="AAG"){
+                    cout << "K";
+                }
+                else if(codon=="GAT" || codon=="GAC"){
+                    cout << "D";
+                }
+                else if(codon=="GAA" || codon=="GAG"){
+                    cout << "E";
+                }
+                else if(codon=="TGT" || codon=="TGC"){
+                    cout << "C";
+                }
+                else if(codon=="TGG"){
+                    cout << "W";
+                }
+                else if(codon=="CGT" || codon=="CGC"|| codon=="CGA"|| codon=="CGG"|| codon=="AGA"|| codon=="AGG"){
+                    cout << "R";
+                }
+
+                else if(codon=="GGT" || codon=="GGC"|| codon=="GGA"|| codon=="GGG"){
+                    cout << "G";
+                }
+                
+                else if (codon=="TAA" || codon=="TAG" || codon == "TGA"){
+                    //cout << "STOP" << endl; //in case of stop codon
+                }
+                
+                nucCount++; //incrememnt amount of nucleotides
+                if (ORFs[i+j+1] == 1 && ORFs[i+j-1] == 1 && nucCount % 3 == 0) { //if 3 nucleotides are present, clear and print a space
+                    cout << "";
+                    codon.clear();
+                }
+                j++;
+            }
+            cout << "\n";
         }
     }
 
