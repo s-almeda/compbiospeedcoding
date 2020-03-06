@@ -109,6 +109,7 @@ void setORFArray(vector<string> top, vector<string> bot) {
         } else if(top[i-2] == "T" && top[i-1] == "G" && top[i] == "A" && inFrame > 0) {
             inFrame = 0;
 
+
             toBeAdded.push_back(i-2);
             toBeAdded.push_back(i-1);
             toBeAdded.push_back(i);
@@ -129,6 +130,14 @@ void setORFArray(vector<string> top, vector<string> bot) {
             }
         }
 
+        // If In ORF, Set Frames in ORF Array To 1
+        /*if(inFrame > 0)
+        {
+            ORFs[i-2] = 1;
+            ORFs[i-1] = 1;
+            ORFs[i] = 1;
+        }*/
+
         // Increment Index
         if(inFrame > 0)
         {
@@ -144,6 +153,7 @@ void setORFArray(vector<string> top, vector<string> bot) {
     toBeAdded.clear();
     i = top.size();
 
+
     // Loop through bot strand and find ORF
     while(j < bot.size())
     {
@@ -154,7 +164,7 @@ void setORFArray(vector<string> top, vector<string> bot) {
             toBeAdded.push_back(j-2);
             toBeAdded.push_back(j-1);
             toBeAdded.push_back(j);
-
+          
         } else if(bot[j-2] == "T" && bot[j-1] == "A" && bot[j] == "G" && inFrame > 0) {
             inFrame = 0;
             toBeAdded.push_back(j-2);
@@ -862,6 +872,9 @@ int main()
     //print tRNA anti-codons for top and bottom strands
     outputTRNASequence(topStrand, botStrand);
 
+    //print amino acid translation for top and bottom strands
+    outputAASequence(topStrand, botStrand);
+    
     //print amino acid translation for top and bottom strands
     outputAASequence(topStrand, botStrand);
     
