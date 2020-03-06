@@ -18,7 +18,8 @@ using namespace std;
 // amino acid sequence
 // tRNA sequence
 
-int ORFs[20000];
+int ORFs[100000];
+string header;
 
 // Ask User For Input File Name
 string getFile() {
@@ -74,7 +75,7 @@ void setORFArray(vector<string> top, vector<string> bot) {
             toBeAdded.push_back(i);
 
         } else if(top[i-2] == "T" && top[i-1] == "A" && top[i] == "G" && inFrame > 0) {
-            inFrame--;
+            inFrame = 0;
 
             toBeAdded.push_back(i-2);
             toBeAdded.push_back(i-1);
@@ -90,7 +91,7 @@ void setORFArray(vector<string> top, vector<string> bot) {
             toBeAdded.clear();
 
         } else if(top[i-2] == "T" && top[i-1] == "A" && top[i] == "A" && inFrame > 0) {
-            inFrame--;
+            inFrame = 0;
 
             toBeAdded.push_back(i-2);
             toBeAdded.push_back(i-1);
@@ -106,7 +107,8 @@ void setORFArray(vector<string> top, vector<string> bot) {
             toBeAdded.clear();
 
         } else if(top[i-2] == "T" && top[i-1] == "G" && top[i] == "A" && inFrame > 0) {
-            inFrame--;
+            inFrame = 0;
+
 
             toBeAdded.push_back(i-2);
             toBeAdded.push_back(i-1);
@@ -118,7 +120,6 @@ void setORFArray(vector<string> top, vector<string> bot) {
                     ORFs[toBeAdded[k]] = 1;
                 }
             }
-
             toBeAdded.clear();
 
         } else {
@@ -150,6 +151,8 @@ void setORFArray(vector<string> top, vector<string> bot) {
 
     inFrame = 0; //reset inFrame for bot strand
     toBeAdded.clear();
+    i = top.size();
+
 
     // Loop through bot strand and find ORF
     while(j < bot.size())
@@ -161,9 +164,9 @@ void setORFArray(vector<string> top, vector<string> bot) {
             toBeAdded.push_back(j-2);
             toBeAdded.push_back(j-1);
             toBeAdded.push_back(j);
-
+          
         } else if(bot[j-2] == "T" && bot[j-1] == "A" && bot[j] == "G" && inFrame > 0) {
-            inFrame--;
+            inFrame = 0;
             toBeAdded.push_back(j-2);
             toBeAdded.push_back(j-1);
             toBeAdded.push_back(j);
@@ -172,14 +175,14 @@ void setORFArray(vector<string> top, vector<string> bot) {
             {
                 for(int k = 0; k < toBeAdded.size(); k++)
                 {
-                    ORFs[toBeAdded[k] + i] = 1;
+                    ORFs[(toBeAdded[k] + i)] = 1;
                 }
             }
 
             toBeAdded.clear();
 
         } else if(bot[j-2] == "T" && bot[j-1] == "A" && bot[j] == "A" && inFrame > 0) {
-            inFrame--;
+            inFrame = 0;
             toBeAdded.push_back(j-2);
             toBeAdded.push_back(j-1);
             toBeAdded.push_back(j);
@@ -188,14 +191,14 @@ void setORFArray(vector<string> top, vector<string> bot) {
             {
                 for(int k = 0; k < toBeAdded.size(); k++)
                 {
-                    ORFs[toBeAdded[k] + i] = 1;
+                    ORFs[(toBeAdded[k] + i)] = 1;
                 }
             }
 
             toBeAdded.clear();
 
         } else if(bot[j-2] == "T" && bot[j-1] == "G" && bot[j] == "A" && inFrame > 0) {
-            inFrame--;
+            inFrame = 0;
             toBeAdded.push_back(j-2);
             toBeAdded.push_back(j-1);
             toBeAdded.push_back(j);
@@ -204,7 +207,7 @@ void setORFArray(vector<string> top, vector<string> bot) {
             {
                 for(int k = 0; k < toBeAdded.size(); k++)
                 {
-                    ORFs[toBeAdded[k] + i] = 1;
+                    ORFs[(toBeAdded[k] + i)] = 1;
                 }
             }
 
@@ -243,6 +246,8 @@ vector<string> readFile(string inputfile){
     // Parse file and store into 'input'
     if (readFile.is_open())
     {
+        getline(readFile, header);
+        cout << header << "\n";
         while (!readFile.eof())
         {
             readFile.get(tmp);
@@ -301,6 +306,7 @@ void outputDNASequence(vector<string> top, vector<string> bot) {
     }
     cout << "  3'\n"; //print newline
 
+    i = top.size();
     // Print Bottom Strand
     cout << "ORF -DNA: 5'  "; //orientation
     
@@ -343,7 +349,7 @@ void outputDNAORFs (vector<string> top, vector<string> bot) {
     int i;
     
     for (i = 0; i < top.size(); i++) { //cycles through each element in first strand
-        if (ORFs[i] == 1) { //upon finding an element that starts an ORF...
+        if (ORFs[i] == 1 && top[i] == "A" && top[i+1] == "T" && top[i+2] == "G") { //upon finding an element that starts an ORF...
             cout << "ORF " << label << "+: "; //print labeling
             label++; //increment ORF count
             while (ORFs[i] == 1) { //keep printing elements until ORF is finished
@@ -366,9 +372,10 @@ void outputDNAORFs (vector<string> top, vector<string> bot) {
     }
     
     label = 1; //reset ORF count to 1
+    i = top.size();
     
     for (int j = 0; j < bot.size(); j++) { //cycle through every element in second strand
-        if (ORFs[i + j] == 1) { //if element is the start of an ORF...
+        if (ORFs[i + j] == 1 && bot[j] == "A" && bot[j+1] == "T" && bot[j+2] == "G") { //if element is the start of an ORF...
             cout << "ORF " << label << "-: "; //print out labeling
             label++; //icrement ORF count
             while (ORFs[i + j] == 1) { //keep printing elements until ORF is finished
@@ -426,7 +433,8 @@ void outputDNAORFs (vector<string> top, vector<string> bot) {
     }
     
     label = 1; //reset ORF count to 1
-    
+    i = top.size();
+
     for (int j = 0; j < bot.size(); j++) { //cycle through every element in second strand
         if (ORFs[i + j] == 1) { //if element is the start of an ORF...
             cout << "ORF " << label << "-: "; //print out labeling
@@ -466,7 +474,7 @@ void outputRNASequence(vector<string> top, vector<string> bot) {
     int i;
     
     for (i = 0; i < top.size(); i++) { //cycles through each element in first strand
-        if (ORFs[i] == 1) { //upon finding an element that starts an ORF...
+        if (ORFs[i] == 1 && top[i] == "A" && top[i+1] == "T" && top[i+2] == "G") { //upon finding an element that starts an ORF...
             cout << "mRNA " << label << "+: "; //print labeling
             label++; //increment ORF count
             while (ORFs[i] == 1) { //keep printing elements until ORF is finished
@@ -489,9 +497,10 @@ void outputRNASequence(vector<string> top, vector<string> bot) {
     }
     
     label = 1; //reset ORF count to 1
+    i = top.size();
     
     for (int j = 0; j < bot.size(); j++) { //cycle through every element in second strand
-        if (ORFs[i + j] == 1) { //if element is the start of an ORF...
+        if (ORFs[i + j] == 1 && bot[j] == "A" && bot[j+1] == "T" && bot[j+2] == "G") { //if element is the start of an ORF...
             cout << "mRNA " << label << "-: "; //print out labeling
             label++; //icrement ORF count
             while (ORFs[i + j] == 1) { //keep printing elements until ORF is finished
@@ -549,6 +558,7 @@ void outputRNASequence(vector<string> top, vector<string> bot) {
     }
     
     label = 1; //reset ORF count to 1
+    i = top.size();
     
     for (int j = 0; j < bot.size(); j++) { //cycle through every element in second strand
         if (ORFs[i + j] == 1) { //if element is the start of an ORF...
@@ -587,16 +597,16 @@ void outputAASequence(vector<string> top, vector<string> bot) {
     string codon; //used to store 3 letter strings for conversions
     int nucCount = 0; //variable used to know how many nucleotides we have used
     int label = 1; //variable used as an ORF counter
+    int i = 0;
 
     //read by 3 letters at a time from start codon index
-    for (int i = 0; i < top.size(); i++) { //parse through top string
-        if (ORFs[i] == 1) { //check if codon is marked as ORF
+    for (i = 0; i < top.size(); i++) { //parse through top string
+        if (ORFs[i] == 1 && top[i] == "A" && top[i+1] == "T" && top[i+2] == "G") { //check if codon is marked as ORF
             cout << "AA " << label << "+: "; //print labeing
             label++;
             codon.clear(); //reset any leftover letters in codon string
             while (ORFs[i] == 1) {
                 codon += top[i]; //add that element to our codon
-                cout << i << ": **" << codon << "**\n";
                 
                 if(codon=="TTT" || codon=="TTC"){ //if and else if branches to print out appropriate amino acid
                     cout << "F";
@@ -622,7 +632,6 @@ void outputAASequence(vector<string> top, vector<string> bot) {
                 else if(codon=="ACU" || codon=="ACC" || codon=="ACA" || codon=="ACG"){
                     cout << "T";
                 }
-                
                 else if(codon=="GCU" || codon=="GCC" || codon=="GCA" || codon=="GCG"){
                     cout << "A";
                 }
@@ -662,16 +671,106 @@ void outputAASequence(vector<string> top, vector<string> bot) {
                 }
                 
                 else if (codon=="TAA" || codon=="TAG" || codon == "TGA"){
-                    cout << "STOP" << endl; //in case of stop codon
+                    //cout << "STOP" << endl; //in case of stop codon
                 }
                 
                 nucCount++; //incrememnt amount of nucleotides
                 if (ORFs[i+1] == 1 && ORFs[i-1] == 1 && nucCount % 3 == 0) { //if 3 nucleotides are present, clear and print a space
-                    cout << " ";
+                    cout << "";
                     codon.clear();
                 }
                 i++;
             }
+            cout << "\n";
+        }
+    }
+
+    label = 1;
+    i = top.size();
+
+    //read by 3 letters at a time from start codon index
+    for (int j = 0; j < bot.size(); j++) { //parse through top string
+        if (ORFs[j + i] == 1 && bot[j] == "A" && bot[j+1] == "T" && bot[j+2] == "G") { //check if codon is marked as ORF
+            cout << "AA " << label << "-: "; //print labeing
+            label++;
+            codon.clear(); //reset any leftover letters in codon string
+            while (ORFs[j + i] == 1) {
+                codon += bot[j]; //add that element to our codon
+                
+                if(codon=="TTT" || codon=="TTC"){ //if and else if branches to print out appropriate amino acid
+                    cout << "F";
+                }
+                else if(codon=="TTA" || codon=="TTG" || codon=="CTT" || codon=="CTC"){
+                    cout << "L";
+                }
+                else if(codon=="ATT" || codon=="ATC" || codon=="ATA"){
+                    cout << "I";
+                }
+                else if(codon=="ATG"){
+                    cout << "M";
+                }
+                else if(codon=="GTT" || codon=="GTC" || codon=="GTA" || codon=="GTG"){
+                    cout << "V";
+                }
+                else if(codon=="TCT" || codon=="TCC" || codon=="TCA" || codon=="TCG"|| codon=="AGT"|| codon=="AGC"){
+                    cout << "S";
+                }
+                else if(codon=="CCT" || codon=="CCC" || codon=="CCA" || codon=="CCG"){
+                    cout << "P";
+                }
+                else if(codon=="ACU" || codon=="ACC" || codon=="ACA" || codon=="ACG"){
+                    cout << "T";
+                }
+                else if(codon=="GCU" || codon=="GCC" || codon=="GCA" || codon=="GCG"){
+                    cout << "A";
+                }
+                else if(codon=="TAT" || codon=="TAC"){
+                    cout << "Y";
+                }
+                else if(codon=="CAT" || codon=="CAC"){
+                    cout << "H";
+                }
+                else if(codon=="CAA" || codon=="CAG"){
+                    cout << "Q";
+                }
+                else if(codon=="AAT" || codon=="AAC"){
+                    cout << "N";
+                }
+                else if(codon=="AAA" || codon=="AAG"){
+                    cout << "K";
+                }
+                else if(codon=="GAT" || codon=="GAC"){
+                    cout << "D";
+                }
+                else if(codon=="GAA" || codon=="GAG"){
+                    cout << "E";
+                }
+                else if(codon=="TGT" || codon=="TGC"){
+                    cout << "C";
+                }
+                else if(codon=="TGG"){
+                    cout << "W";
+                }
+                else if(codon=="CGT" || codon=="CGC"|| codon=="CGA"|| codon=="CGG"|| codon=="AGA"|| codon=="AGG"){
+                    cout << "R";
+                }
+
+                else if(codon=="GGT" || codon=="GGC"|| codon=="GGA"|| codon=="GGG"){
+                    cout << "G";
+                }
+                
+                else if (codon=="TAA" || codon=="TAG" || codon == "TGA"){
+                    //cout << "STOP" << endl; //in case of stop codon
+                }
+                
+                nucCount++; //incrememnt amount of nucleotides
+                if (ORFs[i+j+1] == 1 && ORFs[i+j-1] == 1 && nucCount % 3 == 0) { //if 3 nucleotides are present, clear and print a space
+                    cout << "";
+                    codon.clear();
+                }
+                j++;
+            }
+            cout << "\n";
         }
     }
 
@@ -685,7 +784,7 @@ void outputTRNASequence(vector<string> top, vector<string> bot){ //method to pri
     int counter = 0; //variable used to check if 3 nucleotides have been printed
 
       for (i = 0; i < top.size(); i++) { //cycles through each element in first strand
-          if (ORFs[i] == 1) { //upon finding an element that starts an ORF...
+          if (ORFs[i] == 1 && top[i] == "A" && top[i+1] == "T" && top[i+2] == "G") { //upon finding an element that starts an ORF...
               cout << "tRNA " << label << "+: "; //print labeling
               label++; //increment ORF count
               while (ORFs[i] == 1) { //keep printing elements until ORF is finished
@@ -713,9 +812,10 @@ void outputTRNASequence(vector<string> top, vector<string> bot){ //method to pri
       }
       
       label = 1; //reset ORF count to 1
+      i = top.size();
       
       for (int j = 0; j < bot.size(); j++) { //cycle through every element in second strand
-          if (ORFs[i + j] == 1) { //if element is the start of an ORF...
+          if (ORFs[i + j] == 1 && bot[j] == "A" && bot[j+1] == "T" && bot[j+2] == "G") { //if element is the start of an ORF...
               cout << "tRNA " << label << "-: "; //print out labeling
               label++; //increment ORF count
               while (ORFs[i + j] == 1) { //keep printing elements until ORF is finished
@@ -771,6 +871,9 @@ int main()
     
     //print tRNA anti-codons for top and bottom strands
     outputTRNASequence(topStrand, botStrand);
+
+    //print amino acid translation for top and bottom strands
+    outputAASequence(topStrand, botStrand);
     
     //print amino acid translation for top and bottom strands
     outputAASequence(topStrand, botStrand);
