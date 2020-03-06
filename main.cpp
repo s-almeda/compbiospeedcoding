@@ -80,13 +80,10 @@ void setORFArray(vector<string> top, vector<string> bot) {
             toBeAdded.push_back(i-2);
             toBeAdded.push_back(i-1);
             toBeAdded.push_back(i);
-            if (toBeAdded.size() > 150)
-            {
                 for(int k = 0; k < toBeAdded.size(); k++)
                 {
                     ORFs[toBeAdded[k]] = 1;
                 }
-            }
 
             toBeAdded.clear();
 
@@ -96,13 +93,10 @@ void setORFArray(vector<string> top, vector<string> bot) {
             toBeAdded.push_back(i-2);
             toBeAdded.push_back(i-1);
             toBeAdded.push_back(i);
-            if (toBeAdded.size() > 150)
-            {
                 for(int k = 0; k < toBeAdded.size(); k++)
                 {
                     ORFs[toBeAdded[k]] = 1;
                 }
-            }
 
             toBeAdded.clear();
 
@@ -113,13 +107,10 @@ void setORFArray(vector<string> top, vector<string> bot) {
             toBeAdded.push_back(i-2);
             toBeAdded.push_back(i-1);
             toBeAdded.push_back(i);
-            if (toBeAdded.size() > 150)
-            {
                 for(int k = 0; k < toBeAdded.size(); k++)
                 {
                     ORFs[toBeAdded[k]] = 1;
                 }
-            }
             toBeAdded.clear();
 
         } else {
@@ -129,14 +120,6 @@ void setORFArray(vector<string> top, vector<string> bot) {
                 toBeAdded.push_back(i);
             }
         }
-
-        // If In ORF, Set Frames in ORF Array To 1
-        /*if(inFrame > 0)
-        {
-            ORFs[i-2] = 1;
-            ORFs[i-1] = 1;
-            ORFs[i] = 1;
-        }*/
 
         // Increment Index
         if(inFrame > 0)
@@ -170,14 +153,10 @@ void setORFArray(vector<string> top, vector<string> bot) {
             toBeAdded.push_back(j-2);
             toBeAdded.push_back(j-1);
             toBeAdded.push_back(j);
-
-            if (toBeAdded.size() > 150)
-            {
                 for(int k = 0; k < toBeAdded.size(); k++)
                 {
                     ORFs[(toBeAdded[k] + i)] = 1;
                 }
-            }
 
             toBeAdded.clear();
 
@@ -187,13 +166,10 @@ void setORFArray(vector<string> top, vector<string> bot) {
             toBeAdded.push_back(j-1);
             toBeAdded.push_back(j);
 
-            if (toBeAdded.size() > 150)
-            {
                 for(int k = 0; k < toBeAdded.size(); k++)
                 {
                     ORFs[(toBeAdded[k] + i)] = 1;
                 }
-            }
 
             toBeAdded.clear();
 
@@ -202,14 +178,10 @@ void setORFArray(vector<string> top, vector<string> bot) {
             toBeAdded.push_back(j-2);
             toBeAdded.push_back(j-1);
             toBeAdded.push_back(j);
-
-            if (toBeAdded.size() > 150)
-            {
                 for(int k = 0; k < toBeAdded.size(); k++)
                 {
                     ORFs[(toBeAdded[k] + i)] = 1;
                 }
-            }
 
             toBeAdded.clear();
 
